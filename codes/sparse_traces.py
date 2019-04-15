@@ -4,11 +4,14 @@ from __future__ import division
 import time
 import argparse
 import numpy as np
-import cPickle as pickle
+import pickle
 from collections import Counter
 
 
 def entropy_spatial(sessions):
+# 熵空间，求ln为底的熵信息
+# 输入sessions字典的每一个value都为二维矩阵
+# 输出sessions字典的value值value[][0]的信息熵
     locations = {}
     days = sorted(sessions.keys())
     for d in days:
@@ -25,6 +28,7 @@ def entropy_spatial(sessions):
 
 
 class DataFoursquare(object):
+    # 初始化参数
     def __init__(self, trace_min=10, global_visit=10, hour_gap=72, min_gap=10, session_min=2, session_max=10,
                  sessions_min=2, train_split=0.8, embedding_len=50):
         tmp_path = "../data/"

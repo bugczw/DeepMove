@@ -37,15 +37,18 @@ class TrajPreSimple(nn.Module):
 
         self.fc = nn.Linear(self.hidden_size, self.loc_size)
         self.dropout = nn.Dropout(p=parameters.dropout_p)
+        # dropout随机有p的神经元会被关闭/丢弃，防止过拟合
 
     def init_weights(self):
         """
         Here we reproduce Keras default initialization weights for consistency with Keras version
         """
+        # 提取数据的weight_ih，weight_hh，bias
         ih = (param.data for name, param in self.named_parameters() if 'weight_ih' in name)
         hh = (param.data for name, param in self.named_parameters() if 'weight_hh' in name)
         b = (param.data for name, param in self.named_parameters() if 'bias' in name)
 
+        # ih，hh，b分别用xavier初始化，正交矩阵初始化，常数0初始化
         for t in ih:
             nn.init.xavier_uniform(t)
         for t in hh:
@@ -53,6 +56,7 @@ class TrajPreSimple(nn.Module):
         for t in b:
             nn.init.constant(t, 0)
 
+    # 前向传播,网络结构：cat、dropout、RNN、squeeze、selu、dropout、fc、log_softmax
     def forward(self, loc, tim):
         h1 = Variable(torch.zeros(1, 1, self.hidden_size))
         c1 = Variable(torch.zeros(1, 1, self.hidden_size))
@@ -65,11 +69,12 @@ class TrajPreSimple(nn.Module):
         x = torch.cat((loc_emb, tim_emb), 2)
         x = self.dropout(x)
 
+        # GRU、RNN、LSTM三种神经网络的选择
         if self.rnn_type == 'GRU' or self.rnn_type == 'RNN':
             out, h1 = self.rnn(x, h1)
         elif self.rnn_type == 'LSTM':
             out, (h1, c1) = self.rnn(x, (h1, c1))
-        out = out.squeeze(1)
+        out = out.squeeze(1) #在第一维上增加一个维度
         out = F.selu(out)
         out = self.dropout(out)
 
@@ -78,6 +83,7 @@ class TrajPreSimple(nn.Module):
         return score
 
 
+# 含注意力机制的RNN模型
 # ############# rnn model with attention ####################### #
 class Attn(nn.Module):
     """Attention Module. Heavily borrowed from Practical Pytorch

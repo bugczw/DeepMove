@@ -1,0 +1,30 @@
+***************start training***************
+model_mode:attn_avg_long_user history_mode:avg users:886
+users:886 markov:0.08141960378856757 train:6745 test:2126
+==>Train Epoch:00 Loss:7.8847 lr:0.0005
+==>Test Acc:0.0764 Loss:7.4541
+single epoch time cost:8165.912274837494
+==>Train Epoch:01 Loss:6.2891 lr:0.0005
+==>Test Acc:0.0915 Loss:7.0425
+==>Train Epoch:02 Loss:5.5550 lr:0.0005
+==>Test Acc:0.1008 Loss:6.8978
+==>Train Epoch:03 Loss:5.0536 lr:0.0005
+==>Test Acc:0.1001 Loss:6.8709
+==>Train Epoch:04 Loss:4.6403 lr:0.0005
+==>Test Acc:0.0965 Loss:7.0031
+==>Train Epoch:05 Loss:4.2994 lr:0.0005
+==>Test Acc:0.0938 Loss:7.0544
+load epoch=2 model state
+==>Train Epoch:06 Loss:4.3030 lr:5e-05
+==>Test Acc:0.1281 Loss:6.6156
+==>Train Epoch:07 Loss:3.8662 lr:5e-05
+==>Test Acc:0.1318 Loss:6.6424
+==>Train Epoch:08 Loss:3.6433 lr:5e-05
+==>Test Acc:0.1326 Loss:6.6804
+==>Train Epoch:09 Loss:3.4715 lr:5e-05
+==>Test Acc:0.1269 Loss:6.7132
+==>Train Epoch:10 Loss:3.3280 lr:5e-05
+==>Test Acc:0.1262 Loss:6.7498
+==>Train Epoch:11 Loss:3.2094 lr:5e-05
+==>Test Acc:0.1265 Loss:6.7461
+load epoch=8 model state

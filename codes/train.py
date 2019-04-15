@@ -6,7 +6,7 @@ import torch
 from torch.autograd import Variable
 
 import numpy as np
-import cPickle as pickle
+import pickle
 from collections import deque, Counter
 
 
@@ -18,7 +18,7 @@ class RnnParameterData(object):
         self.data_path = data_path
         self.save_path = save_path
         self.data_name = data_name
-        data = pickle.load(open(self.data_path + self.data_name + '.pk', 'rb'))
+        data = pickle.load(open(self.data_path + self.data_name + '.pk', 'rb'), encoding='latin1')
         self.vid_list = data['vid_list']
         self.uid_list = data['uid_list']
         self.data_neural = data['data_neural']
@@ -217,24 +217,33 @@ def generate_input_long_history(data_neural, mode, candidate=None):
 
 def generate_queue(train_idx, mode, mode2):
     """return a deque. You must use it by train_queue.popleft()"""
-    user = train_idx.keys()
+    user = list(train_idx.keys())
     train_queue = deque()
+    #print('mode:', mode)
+    #print('mode2:', mode2)
     if mode == 'random':
         initial_queue = {}
+        times = 0
         for u in user:
+            #print('times', times)
+            times = times + 1
             if mode2 == 'train':
                 initial_queue[u] = deque(train_idx[u][1:])
             else:
                 initial_queue[u] = deque(train_idx[u])
         queue_left = 1
+        times = 0
         while queue_left > 0:
             np.random.shuffle(user)
+            #print("shuffle ends", times)
+            times = times + 1
             for j, u in enumerate(user):
                 if len(initial_queue[u]) > 0:
                     train_queue.append((u, initial_queue[u].popleft()))
                 if j >= int(0.01 * len(user)):
                     break
             queue_left = sum([1 for x in initial_queue if len(initial_queue[x]) > 0])
+            #print(queue_left)
     elif mode == 'normal':
         for u in user:
             for i in train_idx[u]:
@@ -296,7 +305,9 @@ def run_simple(data, run_idx, mode, lr, clip, model, optimizer, criterion, mode2
     queue_len = len(run_queue)
 
     users_acc = {}
+    #print('queue_len', queue_len)
     for c in range(queue_len):
+        #print('c',c)
         optimizer.zero_grad()
         u, i = run_queue.popleft()
         if u not in users_acc:
@@ -339,8 +350,7 @@ def run_simple(data, run_idx, mode, lr, clip, model, optimizer, criterion, mode2
             users_acc[u][0] += len(target)
             acc = get_acc(target, scores)
             users_acc[u][1] += acc[2]
-        total_loss.append(loss.data.cpu().numpy()[0])
-
+        total_loss.append(loss.data.cpu().numpy())
     avg_loss = np.mean(total_loss, dtype=np.float64)
     if mode == 'train':
         return model, avg_loss

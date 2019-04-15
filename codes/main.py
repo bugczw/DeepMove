@@ -13,6 +13,8 @@ import argparse
 import numpy as np
 from json import encoder
 
+import warnings
+warnings.filterwarnings("ignore")
 encoder.FLOAT_REPR = lambda o: format(o, '.3f')
 
 from train import run_simple, RnnParameterData, generate_input_history, markov, \
@@ -39,6 +41,7 @@ def run(args):
     print('model_mode:{} history_mode:{} users:{}'.format(
         parameters.model_mode, parameters.history_mode, parameters.uid_size))
 
+    # 3种不同模型模式
     if parameters.model_mode in ['simple', 'simple_long']:
         model = TrajPreSimple(parameters=parameters).cuda()
     elif parameters.model_mode == 'attn_avg_long_user':
@@ -91,8 +94,13 @@ def run(args):
                                                        len([y for x in test_idx for y in test_idx[x]])))
     SAVE_PATH = args.save_path
     tmp_path = 'checkpoint/'
-    os.mkdir(SAVE_PATH + tmp_path)
+    if os.path.exists(SAVE_PATH + tmp_path):
+        print("path for saving already exists")
+    else:
+        os.mkdir(SAVE_PATH + tmp_path)
+    #print('parameters.epoch', parameters.epoch)
     for epoch in range(parameters.epoch):
+        #print('epoch', epoch)
         st = time.time()
         if args.pretrain == 0:
             model, avg_loss = run_simple(data_train, train_idx, 'train', lr, parameters.clip, model, optimizer,

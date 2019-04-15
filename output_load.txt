@@ -1,0 +1,6 @@
+***************start training***************
+model_mode:attn_avg_long_user history_mode:avg users:886
+users:886 markov:0.08141960378856757 train:6745 test:2126
+path for saving already exists
+==>Test Acc:0.1337 Loss:6.6074
+single epoch time cost:630.6884162425995
